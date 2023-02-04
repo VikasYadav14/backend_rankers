@@ -28,7 +28,7 @@ const createUser = async function (req, res) {
     if (checkEmail) {
       return res
         .status(400)
-        .send({ status: false, message: 'Email id is already registered' });
+        .send({ status: false, error: 'Email id is already registered' });
     }
 
     // if (!isValid(password)) {
@@ -51,7 +51,7 @@ const createUser = async function (req, res) {
       message: 'user created successfully',
     });
   } catch (error) {
-    return res.status(500).send({ status: false, message: error.message });
+    return res.status(500).send({ status: false, error: error.message });
   }
 };
 
@@ -83,7 +83,7 @@ const login = async function (req, res) {
       .status(200)
       .send({ status: true, message: 'your token', data: token });
   } catch (error) {
-    return res.status(500).send({ status: false, message: error.message });
+    return res.status(500).send({ status: false, error: error.message });
   }
 };
 
@@ -101,7 +101,7 @@ const getUser = async function (req, res) {
       .status(200)
       .send({ status: true, data: checkData });
   } catch (error) {
-    return res.status(500).send({ status: false, message: error.message });
+    return res.status(500).send({ status: false, error: error.message });
   }
 };
 
