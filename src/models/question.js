@@ -18,6 +18,9 @@ const questionModel = mongoose.Schema(
       type: String,
       required: true,
     },
+    explanation:{
+      type:String
+    }
   },
   { timeStamp: true }
 );
