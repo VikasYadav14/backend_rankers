@@ -33,21 +33,20 @@ const createQuestion = async function (req, res) {
 };
 const createQuestions = async function (req, res) {
     try {
-       let {data} = req.body
-        let Class = await data.forEach(element => {
-            let {options} = element
-            options = options.split(",")
-            element.options = options
-            questionModel.insertMany(element)
+        const { data } = req.body;
+        const questionPromises = data.map(async (element) => {
+            const { options } = element;
+            const optionsArray = options.split(",");
+            element.options = optionsArray;
+            return questionModel.create(element);
         });
-        // const Class = await questionModel.create(req.body);
-        return res
-            .status(200)
-            .send({ status: true, data:Class });
+        const questions = await Promise.all(questionPromises);
+        return res.status(200).send({ status: true, data: questions });
     } catch (error) {
         return res.status(500).send({ status: false, error: error.message });
     }
 };
+
 const getChapter = async function (req, res) {
     try {
         const subjects = await subjectModel.find();
