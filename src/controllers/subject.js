@@ -14,24 +14,43 @@ const createSubject = async function (req, res) {
         return res.status(500).send({ status: false, error: error.message });
     }
 };
-const createQuestions = async function (req, res) {
+const createQuestion = async function (req, res) {
     try {
-        let {options} = req.body
-        options = options.split(",")
-        req.body.options = options
-        const Class = await questionModel.create(req.body);
+       let {data} = req.body
+        let Class = await data.forEach(element => {
+            let {options} = element
+            options = options.split(",")
+            element.options = options
+            questionModel.insertMany(element)
+        });
+        // const Class = await questionModel.create(req.body);
         return res
             .status(200)
-            .send({ status: true, data: Class });
+            .send({ status: true, data:Class });
     } catch (error) {
         return res.status(500).send({ status: false, error: error.message });
     }
 };
-
+const createQuestions = async function (req, res) {
+    try {
+       let {data} = req.body
+        let Class = await data.forEach(element => {
+            let {options} = element
+            options = options.split(",")
+            element.options = options
+            questionModel.insertMany(element)
+        });
+        // const Class = await questionModel.create(req.body);
+        return res
+            .status(200)
+            .send({ status: true, data:Class });
+    } catch (error) {
+        return res.status(500).send({ status: false, error: error.message });
+    }
+};
 const getChapter = async function (req, res) {
     try {
-        const {subject} = req.params
-        const subjects = await subjectModel.find({subject});
+        const subjects = await subjectModel.find();
         if (!subjects.length) {
             return res.status(404).send({
                 status: false,
@@ -40,15 +59,21 @@ const getChapter = async function (req, res) {
         }
         return res
             .status(200)
-            .send({ status: true, data: subjects });
+            .send( subjects );
     } catch (error) {
         return res.status(500).send({ status: false, error: error.message });
     }
 };
 const getQuestions = async function (req, res) {
     try {
-        const {topic} = req.params
-        const questions = await questionModel.find({topic});
+        let {topic,size} = req.params
+        topic = topic.split("-").join(" ")
+        size = Number(size)
+        const questions = await questionModel.aggregate([
+            { $match: { topic } }, // filter documents
+            { $sample: { size:5 } } // sample 5 documents
+          ])
+          
         if (!questions.length) {
             return res.status(404).send({
                 status: false,
@@ -63,4 +88,7 @@ const getQuestions = async function (req, res) {
     }
 };
 
-module.exports = {getChapter,createSubject,createQuestions,getQuestions}
+
+
+
+module.exports = {getChapter,createSubject,createQuestion,getQuestions,createQuestions}
